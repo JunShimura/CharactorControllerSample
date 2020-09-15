@@ -7,23 +7,26 @@ public class PlayerController : MonoBehaviour
 {
     CharacterController characterController;
     [SerializeField] float speed = 0.1f;
+    Vector3 gravity;
+    Vector3 moveVector;
     // Start is called before the first frame update
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        gravity = Physics.gravity;
+        moveVector = Vector3.zero;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float hInput = Input.GetAxis("Horizontal")*speed*Time.deltaTime;
-        characterController.Move(new Vector3(hInput, 0, 0));
-    }
-    private void OnTriggerEnter(Collider other)
-    {     
-        if (other.gameObject.CompareTag("Catchable"))
+        moveVector.x = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
+        moveVector.y = 0;
+        moveVector.z = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+        if (!characterController.isGrounded)
         {
-            other.gameObject.transform.SetParent(this.gameObject.transform);
+            moveVector += gravity * Time.deltaTime;
         }
+        characterController.Move(moveVector);
     }
 }
